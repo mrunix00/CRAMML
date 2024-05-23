@@ -179,6 +179,7 @@ sm_mult(number s, const Matrix m)
 Matrix
 m_inv(const Matrix m)
 {
+	/* This is stupidly incorrect, idk where did I come up with this fucking idea*/
 	return m_mult(m, m_eye(m.size.rows, m.size.columns));
 }
 
