@@ -54,7 +54,7 @@ m_print(const Matrix m)
 	uint32_t i, j;
 	for (i = 0; i < m.size.rows; i++) {
 		printf("|");
-		for (j = 0; j < m.size.columns; i++) {
+		for (j = 0; j < m.size.columns; j++) {
 			printf(" %f ", m.values[i][j]);
 		}
 		printf("|\n");
@@ -65,9 +65,10 @@ Matrix
 m_init(uint32_t columns, uint32_t rows, ...)
 {
 	Matrix m;
-	uint32_t i;
+	uint32_t i, j;
 	va_list args;
 	size_t size;
+	number *row;
 
 	m.size.rows = rows;
 	m.size.columns = columns;
@@ -77,7 +78,9 @@ m_init(uint32_t columns, uint32_t rows, ...)
 	for (i = 0; i < rows; i++) {
 		size = columns * sizeof(number);
 		m.values[i] = (number *)safe_malloc(size);
-		memcpy(m.values, va_arg(args, number *), size);
+		row = va_arg(args, number *);
+		for (j = 0; j < columns; j++)
+			m.values[i][j] = row[j];
 	}
 
 	return m;
@@ -116,7 +119,9 @@ m_mult(const Matrix m1, const Matrix m2)
 	    result.size.rows * sizeof(number *));
 
 	for (i = 0; i < result.size.rows; i++) {
-		for (j = 0; i < result.size.columns; j++) {
+		result.values[i] = (number *)safe_malloc(
+		    result.size.columns * sizeof(number));
+		for (j = 0; j < result.size.columns; j++) {
 			sum = 0;
 			for (k = 0; k < result.size.rows; k++)
 				sum += m1.values[i][k] * m2.values[k][j];
