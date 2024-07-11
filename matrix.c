@@ -111,21 +111,14 @@ m_add(const Matrix m1, const Matrix m2)
 Matrix
 m_mult(const Matrix m1, const Matrix m2)
 {
-	Matrix result;
+	Matrix result = m_zeros(m1.size.rows, m1.size.rows);
 	uint32_t i, j, k, sum;
 
-	result.size = (MatrixSize) { m1.size.rows, m1.size.rows };
-	result.values = (number **)safe_malloc(
-	    result.size.rows * sizeof(number *));
-
 	for (i = 0; i < result.size.rows; i++) {
-		result.values[i] = (number *)safe_malloc(
-		    result.size.columns * sizeof(number));
-		for (j = 0; j < result.size.columns; j++) {
-			sum = 0;
-			for (k = 0; k < result.size.rows; k++)
-				sum += m1.values[i][k] * m2.values[k][j];
-			result.values[i][j] = sum;
+		for (k = 0; k < result.size.columns; k++) {
+			for (j = 0; j < result.size.rows; j++)
+				result.values[i][j] += m1.values[i][k] *
+				    m2.values[k][j];
 		}
 	}
 
@@ -179,7 +172,8 @@ sm_mult(number s, const Matrix m)
 Matrix
 m_inv(const Matrix m)
 {
-	/* This is stupidly incorrect, idk where did I come up with this fucking idea*/
+	/* This is stupidly incorrect, idk where did I come up with this fucking
+	 * idea*/
 	return m_mult(m, m_eye(m.size.rows, m.size.columns));
 }
 
